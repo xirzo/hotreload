@@ -3,3 +3,4 @@ hotreload
 *.o
 *.a
 *.dll
+*.swp

@@ -1,16 +1,14 @@
 #!/usr/bin/bash
 
-# TODO: make support of build_and_run.sh for windows
-
-source_files=("./src/main.c" "./src/linux_hotreload.c")
+source_files=("./src/plug.c")
 libraries=("raylib")
-program_name="hotreload"
-cc_flags=("-fsanitize=address")
+lib_name="plug"
 
 red='\e[0;31m'
 green='\e[0;32m'
 no_color='\e[0m'
 
+echo
 if [[ -z ${CC} ]]; then
     echo -e "${red}C Compiler env (CC) is not set, aborting...${no_color}"
     exit 1
@@ -31,9 +29,19 @@ for lib in $libraries; do
     link_libraries+="-l${lib} "
 done
 
+echo
+echo "Cleaning old files..."
+
+rm ${lib_name}.so
+
+echo
+echo  "Current working directory:"
+pwd
+echo
+
 echo "Building sourcefiles..."
 
-$CC ${source_files[@]} -o ${program_name} ${cc_flags[@]} ${link_libraries}
+$CC -shared -fPIC -o ${lib_name}.so ${source_files} ${link_libraries}
 
 if [[ $? -ne  0 ]]; then
     echo -e "${red}Build failed, error code: ${?}${no_color}"
@@ -42,7 +50,4 @@ else
     echo -e "${green}Build ended successfully${no_color}"
 fi
 
-echo "Running the executable..."
-
-./${program_name}
 exit 0
