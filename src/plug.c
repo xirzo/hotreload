@@ -2,11 +2,14 @@
 
 #include <raylib.h>
 
-static int switcher = 0;
+void plug_update(void) {
+}
 
 void plug_draw(void) {
     BeginDrawing();
     ClearBackground(WHITE);
+
+    DrawText("Hello, SHASA!", 0, 0, 20, BLACK);
 
     EndDrawing();
 }

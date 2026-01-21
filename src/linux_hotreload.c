@@ -77,6 +77,13 @@ int plug_load(Plug *plug) {
         return 1;
     }
 
+    plug->plug_update = dlsym(lib, "plug_update");
+
+    if ((error = dlerror()) != NULL)  {
+        fprintf (stderr, "ERROR: Failed to load %s function: %s\n", "plug_update", error);
+        return 1;
+    }
+
     printf("Successfully loaded the plug\n");
     return 0;
 }

@@ -2,6 +2,7 @@
 #define PLUG_H
 
 typedef struct {
+    void (*plug_update)(void);
     void (*plug_draw)(void);
 } Plug;
 

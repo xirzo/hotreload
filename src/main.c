@@ -19,6 +19,7 @@ int main(void) {
 
     while(!WindowShouldClose()) {
         plug_poll_try_rebuild(&plug);
+
         if (IsKeyPressed(KEY_ESCAPE)) {
             break;
         }
@@ -28,6 +29,8 @@ int main(void) {
             CloseWindow();
             return 1;
         }
+
+        plug.plug_update();
 
         plug.plug_draw();
     }
