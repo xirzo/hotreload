@@ -1,0 +1,5 @@
+hotreload
+*.so
+*.o
+*.a
+*.dll
