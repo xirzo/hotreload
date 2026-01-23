@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <raylib.h>
 
 #include "plug.h"
@@ -10,12 +11,21 @@ int main(void) {
     SetTargetFPS(60);
 
     Plug plug = {0};
-
     if (plug_load(&plug) != 0) {
         fprintf(stderr, "ERROR: Failed to initially load the plug\n");
         CloseWindow();
         return 1;
     }
+
+    void *state = malloc(plug.plug_state_size());
+    if (!state) {
+        fprintf(stderr, "ERROR: Failed to init the plug\n");
+        plug.plug_deinit(state);
+        CloseWindow();
+        return 1;
+    }
+
+    plug.plug_init(state);
 
     while(!WindowShouldClose()) {
         plug_poll_try_rebuild(&plug);
@@ -27,19 +37,23 @@ int main(void) {
         if (IsKeyPressed(KEY_SPACE) && plug_reload(&plug) != 0) {
             fprintf(stderr, "ERROR: Failed to reload the plug\n");
             CloseWindow();
+            plug.plug_deinit(state);
+            free(state);
             return 1;
         }
 
-        plug.plug_update();
-
-        plug.plug_draw();
+        plug.plug_update(state);
+        plug.plug_draw(state);
     }
 
     if (plug_unload(&plug) != 0) {
         fprintf(stderr, "ERROR: Failed to unload the plug\n");
+        plug.plug_deinit(state);
+        free(state);
         return 1;
     }
 
+    free(state);
     CloseWindow();
     return 0;
 }

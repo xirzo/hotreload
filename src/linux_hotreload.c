@@ -69,9 +69,16 @@ int plug_load(Plug *plug) {
         return 1;
     }
 
-    plug->plug_draw = dlsym(lib, "plug_draw");
+    plug->plug_init = dlsym(lib, "plug_init");
 
     char *error;
+    if ((error = dlerror()) != NULL)  {
+        fprintf (stderr, "ERROR: Failed to load %s function: %s\n", "plug_init", error);
+        return 1;
+    }
+
+    plug->plug_draw = dlsym(lib, "plug_draw");
+
     if ((error = dlerror()) != NULL)  {
         fprintf (stderr, "ERROR: Failed to load %s function: %s\n", "plug_draw", error);
         return 1;
@@ -81,6 +88,20 @@ int plug_load(Plug *plug) {
 
     if ((error = dlerror()) != NULL)  {
         fprintf (stderr, "ERROR: Failed to load %s function: %s\n", "plug_update", error);
+        return 1;
+    }
+
+    plug->plug_deinit = dlsym(lib, "plug_deinit");
+
+    if ((error = dlerror()) != NULL)  {
+        fprintf (stderr, "ERROR: Failed to load %s function: %s\n", "plug_deinit", error);
+        return 1;
+    }
+
+    plug->plug_state_size = dlsym(lib, "plug_state_size");
+
+    if ((error = dlerror()) != NULL)  {
+        fprintf (stderr, "ERROR: Failed to load %s function: %s\n", "plug_state_size", error);
         return 1;
     }
 
