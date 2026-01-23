@@ -34,13 +34,6 @@ int plug_poll_try_rebuild(Plug *plug) {
 }
 
 int plug_rebuild() {
-//     char command[512];
-//     int printf_ret = snprintf(command, sizeof(command), "echo \"%s\" | %s", lib_source_file, rebuild_exe_name);
-// 
-//     if (printf_ret < 0 || printf_ret >= sizeof(command)) {
-//         fprintf(stderr, "ERROR: Command string too long\n");
-//         return -1;
-//     }
     int code = system(rebuild_exe_name);
 
     if (code != 0) {
