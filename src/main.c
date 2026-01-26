@@ -19,21 +19,31 @@ int main(void) {
         return 1;
     }
 
+    SetTraceLogLevel(LOG_ERROR);
+    InitWindow(900, 600, "Plugin");
+    SetTargetFPS(60);
+
     plug.plug_init(state);
 
     while(!WindowShouldClose()) {
-        plug_poll_try_rebuild(&plug);
-
         if (IsKeyPressed(KEY_ESCAPE)) {
             break;
         }
 
-        if (IsKeyPressed(KEY_SPACE) && plug_reload(&plug) != 0) {
-            fprintf(stderr, "ERROR: Failed to reload the plug\n");
-            plug.plug_deinit(state);
-            free(state);
-            return 1;
-        }
+        if (IsKeyPressed(KEY_SPACE)) {
+	    int reload_plug_result = plug_reload(&plug);
+
+	    plug.plug_deinit(state);
+
+	    if (reload_plug_result != 0) {
+		fprintf(stderr, "ERROR: Failed to reload the plug\n");
+		free(state);
+		CloseWindow();
+		return 1;
+	    }
+
+	    plug.plug_init(state);
+	}
 
         plug.plug_update(state);
         plug.plug_draw(state);
@@ -43,11 +53,13 @@ int main(void) {
 
     if (plug_unload(&plug) != 0) {
         fprintf(stderr, "ERROR: Failed to unload the plug\n");
+	CloseWindow();
         plug.plug_deinit(state);
         free(state);
         return 1;
     }
 
+    CloseWindow();
     free(state);
     return 0;
 }

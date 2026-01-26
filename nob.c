@@ -1,7 +1,7 @@
 #define NOB_IMPLEMENTATION
 #include "nob.h"
 
-#define EXE_NAME "hotreload"
+#define EXE_NAME "landscape"
 #define BUILD_DIR "build/"
 #define SRC_DIR "src/"
 
@@ -15,7 +15,8 @@ int main(int argc, char **argv)
 
     Nob_Cmd cmd = {0};
 
-    nob_cmd_append(&cmd, "cc", "-I./"SRC_DIR, "-fsanitize=address", "-lraylib");
+    // TODO: fetch raylib if not present
+    nob_cmd_append(&cmd, "cc", "-I./"SRC_DIR, "-Wall", "-Wextra", "-fsanitize=address", "-lraylib");
     nob_cmd_append(&cmd, "-o", BUILD_DIR""EXE_NAME);
     nob_cmd_append(&cmd, SRC_DIR"main.c", SRC_DIR"linux_hotreload.c");
 
@@ -29,4 +30,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

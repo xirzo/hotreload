@@ -8,30 +8,9 @@
 #include <sys/stat.h>
 
 static const char *rebuild_exe_name = "./nob";
-static const char *lib_source_file = "./src/plug.c";
 static const char *lib_name = "./build/plug.so";
 
 static void* lib = NULL;
-
-int plug_poll_try_rebuild(Plug *plug) {
-    struct stat source_file_attr;
-    if (stat(lib_source_file, &source_file_attr) != 0) {
-        fprintf(stderr, "ERROR: Failed to get stat for source file\n");
-        return 1;
-    }
-
-    struct stat lib_file_attr;
-    if (stat(lib_name, &lib_file_attr) != 0) {
-        fprintf(stderr, "ERROR: Failed to get stat for lib file\n");
-        return 1;
-    }
-
-    if (source_file_attr.st_mtime <= lib_file_attr.st_mtime) {
-        return 0;
-    }
-
-    return plug_reload(plug);
-}
 
 int plug_rebuild() {
     int code = system(rebuild_exe_name);
@@ -59,6 +38,7 @@ int plug_load(Plug *plug) {
         return 1;
     }
 
+    // TODO: refactor with XMacro?
     plug->plug_init = dlsym(lib, "plug_init");
 
     char *error;
@@ -113,6 +93,7 @@ int plug_reload(Plug *plug) {
 }
 
 int plug_unload(Plug *plug) {
+    (void)plug;
     if (lib == NULL) {
         fprintf(stderr, "ERROR: lib is not loaded yet\n");
         return 1;

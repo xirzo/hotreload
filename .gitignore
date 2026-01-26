@@ -1,4 +1,4 @@
-hotreload
+landscape
 nob
 nob.old
 *.so
@@ -7,3 +7,7 @@ nob.old
 *.dll
 *.swp
 build/**
+
+*~
+\#*\#
+.\#*
