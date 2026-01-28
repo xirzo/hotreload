@@ -6,8 +6,8 @@
 #include "plug.h"
 #include "hotreload.h"
 
-#define SCREEN_WIDTH  900
-#define SCREEN_HEIGHT 900
+#define SCREEN_WIDTH  (int)(1920/(1.5f))
+#define SCREEN_HEIGHT (int)(1080/(1.5f))
 
 int main(void) {
     Plug plug = {0};
@@ -26,8 +26,17 @@ int main(void) {
     memset((void*)state, SCREEN_WIDTH, sizeof(int));
     memset((void*)state + sizeof(int), SCREEN_HEIGHT, sizeof(int));
 
+    Camera camera = (Camera){ 0 };
+    camera.position = (Vector3){ 40.0f, 40.0f, 40.0f };
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.fovy = 45.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
+
+    memcpy((void*)state + sizeof(int) * 2, &camera, sizeof(Camera));
+
     SetTraceLogLevel(LOG_ERROR);
-    InitWindow(900, 900, "Plugin");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Plugin");
     SetTargetFPS(60);
 
     plug.plug_init(state);
