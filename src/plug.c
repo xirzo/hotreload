@@ -3,22 +3,27 @@
 #define RAYMATH_IMPLEMENTATION
 
 #include <rlgl.h>
+#include <stdio.h>
 #include <math.h>
 #include <raymath.h>
 #include <raylib.h>
 #include <stdlib.h>
 
-#define MAP_WIDTH 300
-#define MAP_HEIGHT 300
+#define LTOP (Color){87, 73, 100, 255}
+#define LMID (Color){159, 131, 131, 255}
+#define LBOTMID (Color){200, 170, 170, 255}
+#define LBOT (Color){255, 218, 179, 255}
+
+#define MAP_WIDTH 170
+#define MAP_HEIGHT 170
 
 #define MAP_MESH_WIDTH 100
 #define MAP_MESH_HEIGHT 100
 
 #define MAP_FIRST_PERLIN_SCALE 1.0f
-#define MAP_SECOND_PERLIN_SCALE 3.0f
+#define MAP_SECOND_PERLIN_SCALE 20.0f
 
 // TODO: add noise for randomization
-// TODO: add color
 // TODO: add color-height gradient
 
 typedef struct State {
@@ -36,6 +41,22 @@ size_t plug_state_size(void) {
   return sizeof(State);
 }
 
+Color calculate_color_by_height(float height) {
+  if (height < 150) {
+    return LBOT;
+  }
+
+  if (height >= 150 && height < 187) {
+    return LMID;
+  }
+
+  if (height >= 187) {
+    return LTOP;
+  }
+
+  return BLACK;
+}
+
 void plug_init(void *state) { 
   State *s = (State*)state;
  
@@ -48,6 +69,7 @@ void plug_init(void *state) {
   Color *pixels2 = LoadImageColors(heightmap2);
 
   Image heightmap = GenImageColor(MAP_WIDTH, MAP_HEIGHT, BLACK);
+  Image color = GenImageColor(MAP_WIDTH, MAP_HEIGHT, BLACK);
 
   for (int y = 0; y < heightmap.height; y++) {
     for (int x = 0; x < heightmap.width; x++) {
@@ -64,6 +86,8 @@ void plug_init(void *state) {
 	combinedHeight,
 	255
       };
+
+      ImageDrawPixel(&color, x, y, calculate_color_by_height(noise_value1 + noise_value2));
       
       ImageDrawPixel(&heightmap, x, y, newColor);
     }
@@ -83,12 +107,16 @@ void plug_init(void *state) {
   Texture2D texture = LoadTextureFromImage(heightmap);
   UnloadImage(heightmap);
 
-  s->landscape.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+  Texture2D color_texture = LoadTextureFromImage(color);
+  UnloadImage(color);
+
+  s->landscape.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = color_texture;
 }
 
 void plug_update(void *state) {
   State *s = (State*)state;
   UpdateCamera(&s->camera, CAMERA_ORBITAL); 
+  // UpdateCamera(&s->camera, CAMERA_FREE); 
 }
 
 void plug_draw(void *state) {
