@@ -20,7 +20,7 @@ int main(void) {
     }
 
     SetTraceLogLevel(LOG_ERROR);
-    InitWindow(900, 600, "Plugin");
+    InitWindow(900, 900, "Plugin");
     SetTargetFPS(60);
 
     plug.plug_init(state);
