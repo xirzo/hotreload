@@ -42,21 +42,34 @@ size_t plug_state_size(void) {
 }
 
 Color calculate_color_by_height(float height) {
-  if (height < 150) {
-    return LBOT;
-  }
+    const float HEIGHT_MIN = 0.0f;
+    const float HEIGHT_MAX = 255.0f;
+    
+    const float TRANSITION_BOTTOM = 100.0f;
+    const float TRANSITION_MID = 150.0f;
+    const float TRANSITION_TOP = 200.0f;
+    
+    float normalized_height = (height - HEIGHT_MIN) / (HEIGHT_MAX - HEIGHT_MIN);
 
-  if (height >= 150 && height < 187) {
-    return LMID;
-  }
-
-  if (height >= 187) {
-    return LTOP;
-  }
-
-  return BLACK;
+    normalized_height = fmaxf(0.0f, fminf(1.0f, normalized_height));
+    
+    if (height < TRANSITION_BOTTOM) {
+        return LBOT;
+    }
+    else if (height < TRANSITION_MID) {
+        float t = (height - TRANSITION_BOTTOM) / (TRANSITION_MID - TRANSITION_BOTTOM);
+        return ColorLerp(LBOT, LBOTMID, t);
+    }
+    else if (height < TRANSITION_TOP) {
+        float t = (height - TRANSITION_MID) / (TRANSITION_TOP - TRANSITION_MID);
+        return ColorLerp(LBOTMID, LMID, t);
+    }
+    else {
+        float t = (height - TRANSITION_TOP) / (HEIGHT_MAX - TRANSITION_TOP);
+        t = fmaxf(0.0f, fminf(1.0f, t));
+        return ColorLerp(LMID, LTOP, t);
+    }
 }
-
 void plug_init(void *state) { 
   State *s = (State*)state;
  

@@ -35,6 +35,7 @@ int main(void) {
 
     memcpy((void*)state + sizeof(int) * 2, &camera, sizeof(Camera));
 
+    SetConfigFlags(FLAG_MSAA_4X_HINT); 
     SetTraceLogLevel(LOG_ERROR);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Plugin");
     SetTargetFPS(60);
